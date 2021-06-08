@@ -3,12 +3,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+import logging
 
 
 class BasePage:
 
     def __init__(self, browser):
         self.browser = browser
+        self.logger = logging.getLogger(type(self).__name__)
 
     def _verify_link_presence(self, link_text):
         try:
@@ -19,6 +21,7 @@ class BasePage:
 
     def _verify_element_presence(self, locator: tuple):
         try:
+            self.logger.info("Verify element presence: {}".format(locator))
             return WebDriverWait(self.browser, self.browser.t).until(EC.visibility_of_element_located(locator))
         except TimeoutException:
             raise AssertionError("Cant find element by locator: {}".format(locator))
@@ -33,6 +36,7 @@ class BasePage:
         element.click()
 
     def _click(self, locator: tuple):
+        self.logger.info("Click element: {}".format(locator))
         element = self._element(locator)
         ActionChains(self.browser).pause(0.3).move_to_element(element).click().perform()
 

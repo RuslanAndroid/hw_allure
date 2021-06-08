@@ -1,5 +1,6 @@
 import pytest
 import os
+import logging
 
 from selenium import webdriver
 
@@ -10,6 +11,7 @@ from pages.ProductPage import ProductPage
 from pages.RegistrationPage import RegistrationPage
 
 DRIVERS = os.path.expanduser("~/Downloads/drivers")
+logging.basicConfig(level=logging.INFO, filename="logs/selenium.log")
 
 
 def pytest_addoption(parser):
@@ -26,7 +28,15 @@ def browser(request):
     options = webdriver.ChromeOptions()
     driver = webdriver.Chrome(options=options, executable_path=f"{DRIVERS}/chromedriver")
 
-    request.addfinalizer(driver.quit)
+    logger = logging.getLogger('BrowserLogger')
+    test_name = request.node.name
+    logger.info("===> Test {} started".format(test_name))
+
+    def fin():
+        driver.quit()
+        logger.info("===> Test {} finished".format(test_name))
+
+    request.addfinalizer(fin)
 
     def open(path=""):
         return driver.get(url + path)

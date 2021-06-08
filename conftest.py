@@ -11,7 +11,7 @@ from pages.ProductPage import ProductPage
 from pages.RegistrationPage import RegistrationPage
 
 DRIVERS = os.path.expanduser("~/Downloads/drivers")
-logging.basicConfig(level=logging.INFO, filename="logs/selenium.log")
+logging.basicConfig(level=logging.INFO, filename="test/logs/selenium.log")
 
 
 def pytest_addoption(parser):

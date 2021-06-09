@@ -32,14 +32,14 @@ class MainPage(BasePage):
         self._verify_element_presence(self.SEARCH)
 
     def click_contacts(self):
-        self.browser.find_element(*self.CONTACTS).click()
+        self._click(self.CONTACTS)
 
     def click_product_iphone(self):
-        self.browser.find_element(*self.PRODUCT_IPHONE).click()
+        self._click(self.PRODUCT_IPHONE)
 
     def click_category_tablets(self):
-        self.browser.find_element(*self.CATEGORY_TABLETS).click()
+        self._click(self.CATEGORY_TABLETS)
 
     def click_registration(self):
-        self.browser.find_element(*self.REGISTRATION_DROPDOWN).click()
-        self.browser.find_element(*self.REGISTRATION).click()
+        self._click(self.REGISTRATION_DROPDOWN)
+        self._click(self.REGISTRATION)

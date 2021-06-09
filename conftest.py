@@ -10,13 +10,19 @@ from pages.MainPage import MainPage
 from pages.ProductPage import ProductPage
 from pages.RegistrationPage import RegistrationPage
 
-DRIVERS = os.path.expanduser("~/Downloads/drivers")
-logging.basicConfig(level=logging.INFO, filename="test/logs/selenium.log")
+logging.basicConfig(level=logging.INFO, filename=os.path.dirname(os.path.abspath(__file__)) + "/logs/selenium.log")
 
 
 def pytest_addoption(parser):
     parser.addoption("--url", "-U", default="http://demo-opencart.ru/")
     parser.addoption("--tolerance", type=int, default=3)
+    parser.addoption("--browser", action="store", default="chrome")
+    parser.addoption("--executor", action="store", default="192.168.29.222")
+    parser.addoption("--bversion", action="store", default="90.0")
+    parser.addoption("--vnc", action="store_true", default=True)
+    parser.addoption("--logs", action="store_true", default=False)
+    parser.addoption("--videos", action="store_true", default=False)
+    parser.addoption("--mobile", action="store_true")
 
 
 @pytest.fixture
@@ -24,9 +30,34 @@ def browser(request):
     """ Фикстура инициализации браузера """
     url = request.config.getoption("--url")
     tolerance = request.config.getoption("--tolerance")
+    browser = request.config.getoption("--browser")
+    executor = request.config.getoption("--executor")
+    version = request.config.getoption("--bversion")
+    vnc = request.config.getoption("--vnc")
+    logs = request.config.getoption("--logs")
+    videos = request.config.getoption("--videos")
+    mobile = request.config.getoption("--mobile")
+
+    executor_url = f"http://{executor}:4444/wd/hub"
+
+    caps = {
+        "browserName": browser,
+        "browserVersion": version,
+        "screenResolution": "1280x720",
+        "selenoid:options": {
+            "enableVNC": vnc,
+            "enableVideo": videos,
+            "enableLog": logs
+        },
+        'acceptSslCerts': True,
+        'acceptInsecureCerts': True,
+        'timeZone': 'Europe/Moscow',
+        'goog:chromeOptions': {}
+    }
 
     options = webdriver.ChromeOptions()
-    driver = webdriver.Chrome(options=options, executable_path=f"{DRIVERS}/chromedriver")
+    driver = webdriver.Remote(options=options, command_executor=executor_url,
+                              desired_capabilities=caps)
 
     logger = logging.getLogger('BrowserLogger')
     test_name = request.node.name

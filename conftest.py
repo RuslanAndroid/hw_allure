@@ -1,6 +1,10 @@
+import allure
 import pytest
 import os
 import logging
+
+from allure_commons.types import AttachmentType
+from selenium.webdriver.support.events import EventFiringWebDriver, AbstractEventListener
 
 from selenium import webdriver
 
@@ -11,6 +15,13 @@ from pages.ProductPage import ProductPage
 from pages.RegistrationPage import RegistrationPage
 
 logging.basicConfig(level=logging.INFO, filename=os.path.dirname(os.path.abspath(__file__)) + "/logs/selenium.log")
+
+
+class MyListener(AbstractEventListener):
+    def on_exception(self, exception, driver):
+        allure.attach(driver.get_screenshot_as_png(), name="Screenshot", attachment_type=AttachmentType.PNG)
+        logging.error(f'Oooops i got: {exception}')
+
 
 
 def pytest_addoption(parser):
@@ -56,8 +67,8 @@ def browser(request):
     }
 
     options = webdriver.ChromeOptions()
-    driver = webdriver.Remote(options=options, command_executor=executor_url,
-                              desired_capabilities=caps)
+    driver = EventFiringWebDriver(webdriver.Remote(options=options, command_executor=executor_url,
+                                                   desired_capabilities=caps), MyListener())
 
     logger = logging.getLogger('BrowserLogger')
     test_name = request.node.name

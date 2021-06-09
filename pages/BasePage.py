@@ -30,7 +30,7 @@ class BasePage:
         return self._verify_element_presence(locator)
 
     def _click_element(self, element):
-        ActionChains(self.browser).pause(0.3).move_to_element(element).click().perform()
+        ActionChains(self.browser).pause(0.3).move_to_element(element.wrapped_element).click().perform()
 
     def _simple_click_element(self, element):
         element.click()
@@ -38,7 +38,7 @@ class BasePage:
     def _click(self, locator: tuple):
         self.logger.info("Click element: {}".format(locator))
         element = self._element(locator)
-        ActionChains(self.browser).pause(0.3).move_to_element(element).click().perform()
+        ActionChains(self.browser).pause(0.3).move_to_element(element.wrapped_element).click().perform()
 
     def _click_in_element(self, element, locator: tuple, index: int = 0):
         element = element.find_elements(*locator)[index]
